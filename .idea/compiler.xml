@@ -16,6 +16,7 @@
         <module name="auth-service" />
         <module name="discovery-server" />
         <module name="warehouse-service" />
+        <module name="identity-service" />
       </profile>
     </annotationProcessing>
   </component>
@@ -24,6 +25,7 @@
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />
       <module name="discovery-server" options="-parameters" />
+      <module name="identity-service" options="-parameters" />
       <module name="library-parent" options="" />
       <module name="rental-service" options="-parameters" />
       <module name="warehouse-service" options="-parameters" />

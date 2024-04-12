@@ -20,8 +20,8 @@
     <module>discovery-server</module>
     <module>rental-service</module>
     <module>warehouse-service</module>
-    <module>auth-service</module>
     <module>api-gateway</module>
+    <module>identity-service</module>
   </modules>
 
   <properties>

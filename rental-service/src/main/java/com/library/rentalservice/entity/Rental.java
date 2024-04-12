@@ -25,4 +25,5 @@ public class Rental {
     private String bookTitle;
     private LocalDate startDate = LocalDate.now();
     private LocalDate endDate = LocalDate.now().plusMonths(1);
+    private String username;
 }
