@@ -4,6 +4,7 @@ import com.library.rentalservice.dto.BookRequest;
 import com.library.rentalservice.entity.Rental;
 import com.library.rentalservice.service.RentalService;
 import com.library.rentalservice.service.RentalServiceImpl;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +29,14 @@ public class RentalController {
                 .body(rentals);
     }
 
+    @RateLimiter(name = "rental")
     @PostMapping("/rent")
     public ResponseEntity<?> rentBook(@RequestBody BookRequest bookRequest, HttpServletRequest request) {
        Rental rental = rentalService.rentBook(bookRequest, request);
         return ResponseEntity.ok(rental);
     }
 
+    @RateLimiter(name = "rental")
     @DeleteMapping("/return/{title}")
     public ResponseEntity<?> returnBook(@PathVariable String title, HttpServletRequest request) {
             Long additionalFee = rentalService.returnBook(title, request);
