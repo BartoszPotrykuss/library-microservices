@@ -77,16 +77,6 @@ public class RentalServiceImpl implements RentalService {
             }
             else {
                 rental.setBookTitle(bookResponse.getTitle());
-
-                /*
-                webClient
-                        .method(HttpMethod.PATCH)
-                        .uri("http://localhost:8080/api/book/" + title + "/removeQuantity")
-                        .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
-                        .retrieve()
-                        .bodyToMono(String.class)
-                        .block();
-                */
                 kafkaTemplate.send("removeQuantity", title);
                 return rentalRepository.save(rental);
             }
@@ -111,15 +101,6 @@ public class RentalServiceImpl implements RentalService {
             if(isDeadLineExceeded(rental)) {
                 additionalFee = ChronoUnit.DAYS.between(rental.getEndDate(), LocalDate.now());
             }
-            /*
-            webClient
-                    .method(HttpMethod.PATCH)
-                    .uri("http://localhost:8080/api/book/" + rental.getBookTitle() + "/addQuantity")
-                    .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-             */
             kafkaTemplate.send("addQuantity", title);
             rentalRepository.deleteByUsernameAndBookTitle(username, title);
             return additionalFee;

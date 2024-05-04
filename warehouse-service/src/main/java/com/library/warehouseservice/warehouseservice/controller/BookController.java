@@ -37,15 +37,4 @@ public class BookController {
         return new ResponseEntity<>(bookResponse ,HttpStatus.OK);
     }
 
-    @PatchMapping("/{title}/removeQuantity")
-    public ResponseEntity<String> removeOneQuantity(@PathVariable String title) {
-        bookService.removeOneQuantity(title);
-        return ResponseEntity.ok("The book has been rented");
-    }
-
-    @PatchMapping("/{title}/addQuantity")
-    public ResponseEntity<String> addOneQuantity(@PathVariable String title) {
-        bookService.addOneQuantity(title);
-        return ResponseEntity.ok("The book has been returned");
-    }
 }
