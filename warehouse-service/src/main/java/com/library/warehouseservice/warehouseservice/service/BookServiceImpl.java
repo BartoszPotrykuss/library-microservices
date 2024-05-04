@@ -3,6 +3,7 @@ package com.library.warehouseservice.warehouseservice.service;
 import com.library.warehouseservice.warehouseservice.dto.BookResponse;
 import com.library.warehouseservice.warehouseservice.model.Book;
 import com.library.warehouseservice.warehouseservice.repository.BookRepository;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,6 +49,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @KafkaListener(topics = "removeQuantity", groupId = "user-group")
     public void removeOneQuantity(String title) {
         Book bookDB = bookRepository.getBookByTitle(title);
         bookDB.setQuantity(bookDB.getQuantity() - 1);
@@ -55,6 +57,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @KafkaListener(topics = "addQuantity", groupId = "user-group")
     public void addOneQuantity(String title) {
         Book bookDB = bookRepository.getBookByTitle(title);
         bookDB.setQuantity(bookDB.getQuantity() + 1);

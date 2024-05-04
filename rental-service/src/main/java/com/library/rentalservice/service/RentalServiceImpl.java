@@ -9,6 +9,7 @@ import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -24,10 +26,12 @@ public class RentalServiceImpl implements RentalService {
 
     private final RentalRepository rentalRepository;
     private final WebClient webClient;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public RentalServiceImpl(RentalRepository rentalRepository, WebClient webClient) {
+    public RentalServiceImpl(RentalRepository rentalRepository, WebClient webClient, KafkaTemplate<String, Object> kafkaTemplate) {
         this.rentalRepository = rentalRepository;
         this.webClient = webClient;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
@@ -73,6 +77,8 @@ public class RentalServiceImpl implements RentalService {
             }
             else {
                 rental.setBookTitle(bookResponse.getTitle());
+
+                /*
                 webClient
                         .method(HttpMethod.PATCH)
                         .uri("http://localhost:8080/api/book/" + title + "/removeQuantity")
@@ -80,6 +86,8 @@ public class RentalServiceImpl implements RentalService {
                         .retrieve()
                         .bodyToMono(String.class)
                         .block();
+                */
+                kafkaTemplate.send("removeQuantity", title);
                 return rentalRepository.save(rental);
             }
         }
@@ -103,6 +111,7 @@ public class RentalServiceImpl implements RentalService {
             if(isDeadLineExceeded(rental)) {
                 additionalFee = ChronoUnit.DAYS.between(rental.getEndDate(), LocalDate.now());
             }
+            /*
             webClient
                     .method(HttpMethod.PATCH)
                     .uri("http://localhost:8080/api/book/" + rental.getBookTitle() + "/addQuantity")
@@ -110,6 +119,8 @@ public class RentalServiceImpl implements RentalService {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
+             */
+            kafkaTemplate.send("addQuantity", title);
             rentalRepository.deleteByUsernameAndBookTitle(username, title);
             return additionalFee;
         }
